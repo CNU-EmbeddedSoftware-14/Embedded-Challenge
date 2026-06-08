@@ -1,0 +1,58 @@
+# Keil MDK-ARM / uVision user files
+*.uvgui.*
+*.uvguix.*
+*.uvgui
+*.uvguix
+*.uvmpw
+*.uvgui_*
+*.uvguix_*
+
+# Keil build output directories
+**/MDK-ARM/output/
+**/MDK-ARM/Output/
+**/MDK-ARM/Objects/
+**/MDK-ARM/Listings/
+**/MDK-ARM/DebugConfig/
+
+# Keil/ARM compiler and linker outputs
+*.axf
+*.bin
+*.crf
+*.d
+*.dep
+*.elf
+*.hex
+*.i
+*.iex
+*.lnp
+*.lst
+*.map
+*.o
+*.obj
+
+# Keep actual Keil project files
+!*.uvproj
+!*.uvprojx
+!*.uvopt
+!*.uvoptx
+
+# STM32CubeIDE / Eclipse metadata, if generated later
+.metadata/
+.settings/
+.cproject
+.project
+
+# Editor and OS noise
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+Desktop.ini
+
+# Temporary and backup files
+*.bak
+*.orig
+*.tmp
+*.TMP
+*~
