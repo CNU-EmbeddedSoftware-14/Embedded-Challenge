@@ -1,6 +1,9 @@
 # 자율주행 임베디드 챌린지
 
-휴인스 Ubrain 모델과 STM32F429II를 기반으로 구현한 다중 센서 자율주행 프로젝트임.  
+<img src="docs/images/Ubrain.png" alt="휴인스 Ubrain 모델" width="50%">
+
+휴인스 Ubrain 모델과 STM32F429II를 기반으로 구현한 다중 센서 자율주행 프로젝트
+
 좌우 적외선 센서와 전방·좌·우 초음파 센서를 조합하고, FreeRTOS 태스크와 Queue를 이용해 센서 처리와 모터 제어를 분리함.
 
 > 임베디드소프트웨어 01반 · 14팀  
@@ -10,7 +13,12 @@
 
 | 구분 | 링크 |
 |---|---|
-| 전체 코스 주행 | [YouTube 영상](https://youtu.be/REPLACE_WITH_FULL_RUN_VIDEO_ID) |
+| 연습 주행 1 | [연습 과정에서 구성한 코스 주행](https://www.youtube.com/shorts/X7TjMowvyI4?feature=share) |
+| 연습 주행 2 | [실습 코스 연습 주행](https://youtube.com/shorts/rzx_PBp4DDI?feature=share) |
+| 연습 주행 3 | [평가 코스 연습 주행](https://youtube.com/shorts/xVC4OjvIfxA?feature=share) |
+| 평가 코스 최종 주행 1 | * 영상 녹화 오류로 인한 연습 주행 영상 대체 (동적 장애물 충돌로 3구간 실격) |
+| 평가 코스 최종 주행 2 | [지정 맵 탈출로 1구간 실격](https://youtube.com/shorts/j9KKh7JnI00?feature=share) |
+| 평가 코스 최종 주행 3 | [지정 맵 탈출로 1구간 실격](https://youtube.com/shorts/MTQTegcoarQ?feature=share)|
 
 ## 개발 환경
 
@@ -40,6 +48,32 @@
 | 막힘 | 막힘 | 열림 | 우회전 |
 | 막힘 | 열림 | 막힘 | 좌회전 |
 | 막힘 | 막힘 | 막힘 | 누적 회전량의 반대 방향으로 크게 회전 |
+
+## HeadingState 기반 방향 추정
+
+자이로 센서 없이 좌·우 회전 시간을 누적해 로봇의 현재 주행 방향을 `HeadingState`로 관리함.
+
+| 순회전량 | `HeadingState` | 의미 |
+|---:|---|---|
+| 우회전 누적량이 큼 | `HEADING_RIGHT` | 오른쪽 방향으로 주행 중 |
+| 좌회전 누적량이 큼 | `HEADING_LEFT` | 왼쪽 방향으로 주행 중 |
+| 좌우 누적량이 비슷함 | `HEADING_FRONT` | 초기 진행 방향으로 주행 중 |
+
+IR 센서의 미세 조향은 방향 상태에 과도하게 반영되지 않도록 `0.24` 가중치를 적용함.
+
+외딴 섬 구간에서는 현재 `HeadingState`를 기준으로 추적할 측면 벽과 원래 진행축으로 복귀할 회전 방향을 결정함.
+
+### HeadingState LED 디버깅
+
+센서 조건과 누적 회전량에 따라 방향 상태가 의도대로 전환되는지 보드 LED로 즉시 확인할 수 있도록 구성함.
+
+| LED 표시 | `HeadingState` | 확인 목적 |
+|---|---|---|
+| `LED1` 점등 | `HEADING_RIGHT` | 우회전 누적량이 우측 방향 판정 기준에 도달했는지 확인 |
+| `LED2`, `LED3` 점등 | `HEADING_FRONT` | 좌우 회전량이 상쇄되어 초기 진행축 허용 범위로 복귀했는지 확인 |
+| `LED4` 점등 | `HEADING_LEFT` | 좌회전 누적량이 좌측 방향 판정 기준에 도달했는지 확인 |
+
+이를 통해 외딴 섬 구간에서 벽 소실을 올바른 측면 센서로 추적하는지와 복귀 회전 후 `HEADING_FRONT`로 전환되는지를 주행 중 검증함.
 
 ## 외딴 섬 문제
 
